@@ -1,6 +1,6 @@
 FROM python 
 
-RUN pip install flask
+RUN pip install flask markdown
 RUN echo exit > /root/.bash_history
 WORKDIR /app
 
