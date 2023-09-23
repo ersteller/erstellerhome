@@ -2,6 +2,7 @@ FROM python
 
 RUN pip install flask markdown
 RUN echo exit > /root/.bash_history
+RUN echo python /app/src/server.py >> /root/.bash_history
 WORKDIR /app
 
 
