@@ -18,7 +18,9 @@ docker build -t erstellerhome . && docker run -it -p 80:80  erstellerhome python
 
 docker push 
 
-docker run erstellerhome -d --restart-always -p 80:80  
+docker run erstellerhome -d --restart unless-stopped -p 80:80  
+
+docker run -d -p 80:80 --name erstellerhome --restart unless-stopped erstellerhome python /app/src/server.py
 
 # TODO:
 add pull command url  
