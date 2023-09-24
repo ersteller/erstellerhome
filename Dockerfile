@@ -8,6 +8,8 @@ WORKDIR /app
 
 COPY src src
 COPY site site
+COPY styles styles
+COPY img img
 
 #ENV FLASK_ENV=development
 ENV FLASK_ENV=production
