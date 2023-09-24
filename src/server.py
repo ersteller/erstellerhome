@@ -83,6 +83,14 @@ def pull():
     status = 200 if res == 0 else res
     return Response("pulled", status=status)
 
+@app.route('/api/conv') 
+def reconv(): 
+    print("conv",)
+    files = ['site/'+f for f in os.listdir('site') if os.path.isfile('site/'+f) and '.md' in f] # get .md files
+    print(files)
+    conv(files)
+    return Response("converted", status=200)
+
 def conv(files):
     # open files to be converted
     # open new file and fill it with html and save 
