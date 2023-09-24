@@ -5,6 +5,7 @@
 # 
 from flask import Flask, Response
 import markdown
+import os
 
 head =  """<!DOCTYPE html>
 <html>
@@ -74,6 +75,13 @@ def fav ():
           return f.read()
     except Exception as e:
        return e
+
+@app.route('/api/pull') 
+def pull(): 
+    print("git pull")
+    res = os.system("git pull")
+    status = 200 if res == 0 else res
+    return Response("pulled", status=status)
 
 def conv(files):
     # open files to be converted

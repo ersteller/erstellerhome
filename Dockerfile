@@ -10,6 +10,7 @@ COPY src src
 COPY site site
 COPY styles styles
 COPY img img
+COPY .git .git
 
 #ENV FLASK_ENV=development
 ENV FLASK_ENV=production
