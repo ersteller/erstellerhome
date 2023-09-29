@@ -6,6 +6,7 @@ RUN echo python /app/src/server.py >> /root/.bash_history
 WORKDIR /app
 
 
+COPY Dockerfile README.md ./
 COPY src src
 COPY site site
 COPY styles styles
