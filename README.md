@@ -20,14 +20,14 @@ docker push
 
 docker run erstellerhome -d --restart unless-stopped -p 80:80  
 
-docker run -d -p 80:80 --name erstellerhome --rm --restart unless-stopped erstellerhome python /app/src/server.py
+docker run -d -p 80:80 --name erstellerhome --restart unless-stopped erstellerhome python /app/src/server.py
 
 # TODO:
+- implement forwarding or status 
 - maybe think about css for markdown output  [style](https://github.com/jasonm23/markdown-css-themes/blob/gh-pages/markdown1.css) [default](https://raw.githubusercontent.com/richleland/pygments-css/master/default.css)
 - https
 - maybe add check for Doorbird to be online (try to push notification to phone (reqires https)). 
 - add shader integration
-
 
 ## https 
 ssl cert  

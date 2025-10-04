@@ -1,6 +1,6 @@
 title:forward
 # Staus
-[PV](/forward/192.168.178.91/)  
+[PV](/forward/http://192.168.178.91/)  
 
 
 [Doorbird](http://192.168.178.33/bha-api/view.html) 
