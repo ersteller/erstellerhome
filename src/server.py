@@ -4,6 +4,8 @@
 # 
 # 
 from flask import Flask, Response
+import urllib.request # for forwarding requests
+
 import markdown
 import os
 
@@ -37,44 +39,54 @@ app = Flask(__name__)
 @app.route('/index')
 @app.route('/index.html')
 def home():
-  with open('site/index.html') as f:
-    return f.read()
+    with open('site/index.html') as f:
+        return f.read()
 
 @app.route('/site/<arg>')
 def site (arg):
     print("site arg: ",arg)
     try:
-       with open('site/'+arg+'.html') as f:
-          return f.read()
+        with open('site/'+arg+'.html') as f:
+            return f.read()
     except Exception as e:
-       return e
+        return e
+
+@app.route('/forward/<arg>')
+def forward (arg):
+    print("forward arg: ", arg)
+    try:
+        # get file from url and return it
+        s = urllib.request.urlopen(arg).read().decode()
+        return s
+    except Exception as e:
+        return e
     
 @app.route('/styles/<arg>')
 def styles (arg):
     print("styles arg: ",arg)
     try:
-       with open('styles/'+arg) as f:
-          css = f.read()
-          return Response(css, mimetype='text/css')
+        with open('styles/'+arg) as f:
+            css = f.read()
+            return Response(css, mimetype='text/css')
     except Exception as e:
-       return e
+        return e
 
 @app.route('/img/<arg>')
 def img (arg):
     print("img arg: ",arg)
     try:
-       with open('img/'+arg,'rb') as f:
-          return f.read()
+        with open('img/'+arg,'rb') as f:
+            return f.read()
     except Exception as e:
-       return e
+        return e
 
 @app.route('/favicon.ico')
 def fav ():
     try:
-       with open('img/ersteller.png','rb') as f:
-          return f.read()
+        with open('img/ersteller.png','rb') as f:
+            return f.read()
     except Exception as e:
-       return e
+        return e
 
 @app.route('/api/pull') 
 def pull(): 
@@ -96,23 +108,24 @@ def conv(files):
     # open new file and fill it with html and save 
     # maybe make routs to converted sites
     for fpath in files: 
-      with open(fpath, 'r') as f:
-        text = f.read()
+        with open(fpath, 'r') as f:
+            text = f.read()
 
-      html = md.convert(text)
-      md_meta =  md.Meta
-      metatitle = md_meta.get('title')[0] # [0] -> converts one element list to string
-      outhead = head % { 'title' : metatitle }
+        html = md.convert(text)
+        md_meta =  md.Meta
+        metatitle = md_meta.get('title')[0] # [0] -> converts one element list to string
+        outhead = head % { 'title' : metatitle }
 
-      htmlpath = fpath.rsplit('.',1)[0] + ".html"
-      with open(htmlpath, 'w') as f:
-        f.write(outhead + html + outtail)
-      md.reset()
+        htmlpath = fpath.rsplit('.',1)[0] + ".html"
+        with open(htmlpath, 'w') as f:
+            f.write(outhead + html + outtail)
+        md.reset()
 
 if __name__ == '__main__':
   conv(["site/index.md",
         "site/links.md",
         "site/locals.md",
+        "site/forward.md",
             ])
   #app.run(host='0.0.0.0', port=8000, debug=True ) for local debugging
   app.run(host='0.0.0.0', port=80)
