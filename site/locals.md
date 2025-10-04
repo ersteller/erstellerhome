@@ -7,6 +7,6 @@ title:Local URLs
 [Kyocecosys](http://192.168.178.55/)  
 [pihole](http://192.168.178.254/)  
 [rpi4](http://192.168.178.77/)  
-[octopi](192.168.178.23)  
+[octopi](http://192.168.178.23/)  
 [PV](http://192.168.178.91/)  
 
