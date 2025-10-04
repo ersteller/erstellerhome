@@ -111,7 +111,8 @@ def conv(files):
 
 if __name__ == '__main__':
   conv(["site/index.md",
-            "site/links.md"
+        "site/links.md",
+        "site/locals.md",
             ])
   #app.run(host='0.0.0.0', port=8000, debug=True ) for local debugging
   app.run(host='0.0.0.0', port=80)
