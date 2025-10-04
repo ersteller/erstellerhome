@@ -1,3 +1,4 @@
+title:forward
 # Staus
 [PV](/forward/192.168.178.91/)  
 
