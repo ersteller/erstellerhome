@@ -22,6 +22,10 @@ docker run erstellerhome -d --restart unless-stopped -p 80:80
 
 docker run -d -p 80:80 --name erstellerhome --restart unless-stopped erstellerhome python /app/src/server.py
 
+### with archive
+docker run -d --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 --name erstellerhome --restart unless-stopped erstellerhome python /app/src/server.py
+
+
 # TODO:
 - implement forwarding or status 
 - maybe think about css for markdown output  [style](https://github.com/jasonm23/markdown-css-themes/blob/gh-pages/markdown1.css) [default](https://raw.githubusercontent.com/richleland/pygments-css/master/default.css)
