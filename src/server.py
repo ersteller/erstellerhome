@@ -42,6 +42,19 @@ def home():
     with open('site/index.html') as f:
         return f.read()
 
+@app.route('/archive/<arg>')
+def archive (arg):
+    print("archive arg: ",arg)
+    # /srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archiv/backup1/
+    # --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive
+    # archive/5.jpg
+    try:
+        #with open('archive/'+arg+'.html') as f:
+        with open('archive/'+arg,'rb') as f:
+            return f.read()
+    except Exception as e:
+        return e
+
 @app.route('/site/<arg>')
 def site (arg):
     print("site arg: ",arg)
