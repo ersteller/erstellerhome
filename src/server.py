@@ -9,6 +9,9 @@ import urllib.request # for forwarding requests
 import markdown
 import os
 
+archivepath = "/app/archive/"
+# archivepath = "/archive"
+
 head =  """<!DOCTYPE html>
 <html>
   <head>
@@ -27,6 +30,19 @@ outtail = """
 </html>
 """
 
+#<link rel="stylesheet" href="resource://content-accessible/ImageDocument.css">
+#<link rel="stylesheet" href="resource://content-accessible/TopLevelImageDocument.css">
+#  titel 448160.jpg (JPEG-Grafik, 300&nbsp;×&nbsp;400 Pixel)
+#  src file://///RPI4/public/erotic/archive/448160.jpg
+imagehtmltemplate = """<html><head> <meta name="viewport" content="width=device-width; height=device-height;"><link href="/styles/default.css" type="text/css" rel="stylesheet" /><link href="/styles/markdown1.css" type="text/css" rel="stylesheet" /><title>{titel}</title></head><body><img src="{src}"></body></html>"""
+
+folderbodytemplate = """
+<h1>Folder listing of {folder}</h1>
+<ul>
+{items}
+</ul>
+"""
+
 md = markdown.Markdown(extensions = [
                   'codehilite',
                   'meta'
@@ -42,18 +58,44 @@ def home():
     with open('site/index.html') as f:
         return f.read()
 
-@app.route('/archive/<arg>')
+@app.route('/img/archive/<path:arg>')
+def imgarchive (arg):
+    print("img archive: ",arg)
+    try:
+        with open(archivepath + '/' + arg, 'rb') as f:
+            return f.read()
+    except Exception as e:
+        return e
+
+imgextlist = ['.jpg', '.png', '.gif', '.jpeg', '.bmp']
+
+@app.route('/archive/', defaults={'arg':'.'})
+@app.route('/archive/<path:arg>')
 def archive (arg):
     print("archive arg: ",arg)
     # /srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archiv/backup1/
     # --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive
     # archive/5.jpg
-    try:
-        #with open('archive/'+arg+'.html') as f:
-        with open('archive/'+arg,'rb') as f:
-            return f.read()
-    except Exception as e:
-        return e
+    path = archivepath + '/' + arg
+    base, extension = os.path.splitext(arg)
+    lext = extension.lower()
+    if lext in imgextlist:
+        titel = arg
+        path = '/img/archive/'+ arg     # we need to have a url to the src of the binary image file that is diffrent from the html file
+        out = imagehtmltemplate.format(titel=titel, src=path)
+    # elsif '.webm' in arg: we would need some jsplayer
+    else: # list folder
+        folder = arg
+        try:
+            items = []
+            for f in os.listdir(path):
+                items.append('<li><a href="/archive/{folder}/{file}">{file}</a></li>'.format(folder=folder,file=f))
+            items.sort(key=lambda e: e.lower()) # todo dont mix files and folders
+            body = folderbodytemplate.format(folder=folder, items="\n".join(items))
+            out = head % { 'title' : "Folder " + folder } + body + outtail
+        except Exception as e:
+            return e
+    return out
 
 @app.route('/site/<arg>')
 def site (arg):
