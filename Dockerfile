@@ -20,3 +20,17 @@ ENV FLASK_APP=src/server
 # CMD python src/server.py
 CMD flask run --host=0.0.0.0 --port=80
 
+RUN snap install --classic certbot
+
+RUN ln -s /snap/bin/certbot /usr/bin/certbot
+
+# if my website is not running
+# RUN certbot certonly --standalone  
+#if it was running (Docker build is not running the server)
+# RUN certbot certonly --webroot
+
+# try the renew 
+# RUN certbot renew --dry-run
+
+
+
