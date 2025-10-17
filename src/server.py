@@ -16,6 +16,8 @@ htmlwrapper = """<!DOCTYPE html> <html> <head><meta charset="utf-8"><link href="
 foldertplt = """<h1>Folder listing of {folder}</h1><ul>{items}</ul>"""
 imagetplt = """<img src="{src}">"""
 videotplt = """<video> <source src="{src}"/> </video>"""
+imgextlist = ['.jpg', '.png', '.gif', '.jpeg', '.bmp']
+vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov'] 
 
 md = markdown.Markdown(extensions = [
                   'codehilite',
@@ -23,8 +25,9 @@ md = markdown.Markdown(extensions = [
                 ], 
                 output_format="html5")
 
-app = Flask(__name__)
+app = Flask(__name__) # maybe we need something else for https
 
+# home or index page
 @app.route('/')
 @app.route('/index')
 @app.route('/index.html')
@@ -33,51 +36,7 @@ def home():
     with open('site/index.html') as f:
         return f.read()
 
-@app.route('/img/archive/<path:arg>')
-def imgarchive (arg):
-    print("img archive: ",arg)
-    try:
-        with open(archivepath + '/' + arg, 'rb') as f:
-            return f.read()
-    except Exception as e:
-        return e
-
-imgextlist = ['.jpg', '.png', '.gif', '.jpeg', '.bmp']
-vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov'] 
-
-@app.route('/archive/', defaults={'arg':'.'})
-@app.route('/archive/<path:arg>')
-def archive (arg):
-    print("archive arg: ",arg)
-    # /srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archiv/backup1/
-    # --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive
-    # archive/5.jpg
-    path = archivepath + '/' + arg
-    base, extension = os.path.splitext(arg)
-    lext = extension.lower()
-    if lext in imgextlist:
-        titel = arg
-        path = '/img/archive/'+ arg     # we need to have a url to the src of the binary image file that is diffrent from the html file
-        imageelement = imagetplt.format(src=path)
-        out =  htmlwrapper.format(body=imageelement, titel=titel)
-    elif lext in vidextlist: # we need some player
-        titel = arg
-        path = '/img/archive/'+ arg     # we need to have a url to the src of the binary video file that is diffrent from the html file
-        videoelement = videotplt.format(src=path)
-        out =  htmlwrapper.format(body=videoelement, titel=titel)
-    else: # list folder
-        folder = arg
-        try:
-            items = []
-            for f in os.listdir(path):
-                items.append('<li><a href="/archive/{folder}/{file}">{file}</a></li>'.format(folder=folder,file=f))
-            items.sort(key=lambda e: e.lower()) # todo dont mix files and folders
-            body = foldertplt.format(folder=folder, items="\n".join(items))
-            out = htmlwrapper.format(title="Folder "+folder, body=body)
-        except Exception as e:
-            return e
-    return out
-
+# all other site pages
 @app.route('/site/<arg>')
 def site (arg):
     print("site arg: ",arg)
@@ -87,16 +46,27 @@ def site (arg):
     except Exception as e:
         return e
 
-@app.route('/forward/<arg>')
+# we need a function for the certbot directory
+@app.route('/.well-known/acme-challenge/<arg>')
+def certbot (arg):
+    print("certbot arg: ",arg)
+    try:
+        with open('.well-known/acme-challenge/'+arg) as f:
+            return f.read()
+    except Exception as e:
+        return e
+
+# this should forward a local site to the remote 
+# todo: think about security issues 
+@app.route('/forward/<path:arg>') 
 def forward (arg):
     print("forward arg: ", arg)
     try:
         # get file from url and return it
-        s = urllib.request.urlopen(arg).read().decode()
+        s = urllib.request.urlopen(arg).read().decode() # meybe we need to replace some resource paths in the html
         return s
     except Exception as e:
         return e
-    
 @app.route('/styles/<arg>')
 def styles (arg):
     print("styles arg: ",arg)
@@ -123,6 +93,48 @@ def fav ():
             return f.read()
     except Exception as e:
         return e
+
+# special functions for archive folder
+@app.route('/img/archive/<path:arg>')
+def imgarchive (arg):
+    print("img archive: ",arg)
+    try:
+        with open(archivepath + '/' + arg, 'rb') as f:
+            return f.read()
+    except Exception as e:
+        return e
+    
+# special functions for archive folder
+@app.route('/archive/', defaults={'arg':'.'})
+@app.route('/archive/<path:arg>')
+def archive (arg):
+    print("archive arg: ",arg)
+    # --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive
+    path = archivepath + '/' + arg
+    base, extension = os.path.splitext(arg)
+    lext = extension.lower()
+    if lext in imgextlist:
+        titel = arg
+        path = '/img/archive/'+ arg     # we need to have a url to the src of the binary image file that is diffrent from the html file
+        imageelement = imagetplt.format(src=path)
+        out =  htmlwrapper.format(body=imageelement, titel=titel)
+    elif lext in vidextlist: # we need some player
+        titel = arg
+        path = '/img/archive/'+ arg     # we need to have a url to the src of the binary video file that is diffrent from the html file
+        videoelement = videotplt.format(src=path)
+        out =  htmlwrapper.format(body=videoelement, titel=titel)
+    else: # list folder
+        folder = arg
+        try:
+            items = []
+            for f in os.listdir(path):
+                items.append('<li><a href="/archive/{folder}/{file}">{file}</a></li>'.format(folder=folder,file=f))
+            items.sort(key=lambda e: e.lower()) # todo dont mix files and folders
+            body = foldertplt.format(folder=folder, items="\n".join(items))
+            out = htmlwrapper.format(title="Folder "+folder, body=body)
+        except Exception as e:
+            return e
+    return out
 
 @app.route('/api/pull') 
 def pull(): 
