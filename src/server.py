@@ -12,36 +12,10 @@ import os
 archivepath = "/app/archive/"
 # archivepath = "/archive"
 
-head =  """<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <link href="/styles/default.css" type="text/css" rel="stylesheet" />
-    <link href="/styles/markdown1.css" type="text/css" rel="stylesheet" />
-    <title>%(title)s</title>
-  </head> 
-
-<body>
-"""
-outtail = """
-
-</body>
-
-</html>
-"""
-
-#<link rel="stylesheet" href="resource://content-accessible/ImageDocument.css">
-#<link rel="stylesheet" href="resource://content-accessible/TopLevelImageDocument.css">
-#  titel 448160.jpg (JPEG-Grafik, 300&nbsp;×&nbsp;400 Pixel)
-#  src file://///RPI4/public/erotic/archive/448160.jpg
-imagehtmltemplate = """<html><head> <meta name="viewport" content="width=device-width; height=device-height;"><link href="/styles/default.css" type="text/css" rel="stylesheet" /><link href="/styles/markdown1.css" type="text/css" rel="stylesheet" /><title>{titel}</title></head><body><img src="{src}"></body></html>"""
-
-folderbodytemplate = """
-<h1>Folder listing of {folder}</h1>
-<ul>
-{items}
-</ul>
-"""
+htmlwrapper = """<!DOCTYPE html> <html> <head><meta charset="utf-8"><link href="/styles/default.css" type="text/css" rel="stylesheet" /><link href="/styles/markdown1.css" type="text/css" rel="stylesheet" /><title>{titel}</title></head><body>{body}</body></html>"""
+foldertplt = """<h1>Folder listing of {folder}</h1><ul>{items}</ul>"""
+imagetplt = """<img src="{src}">"""
+videotplt = """<video> <source src="{src}"/> </video>"""
 
 md = markdown.Markdown(extensions = [
                   'codehilite',
@@ -54,6 +28,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index')
 @app.route('/index.html')
+@app.route('/home')
 def home():
     with open('site/index.html') as f:
         return f.read()
@@ -68,6 +43,7 @@ def imgarchive (arg):
         return e
 
 imgextlist = ['.jpg', '.png', '.gif', '.jpeg', '.bmp']
+vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov'] 
 
 @app.route('/archive/', defaults={'arg':'.'})
 @app.route('/archive/<path:arg>')
@@ -82,8 +58,13 @@ def archive (arg):
     if lext in imgextlist:
         titel = arg
         path = '/img/archive/'+ arg     # we need to have a url to the src of the binary image file that is diffrent from the html file
-        out = imagehtmltemplate.format(titel=titel, src=path)
-    # elsif '.webm' in arg: we would need some jsplayer
+        imageelement = imagetplt.format(src=path)
+        out =  htmlwrapper.format(body=imageelement, titel=titel)
+    elif lext in vidextlist: # we need some player
+        titel = arg
+        path = '/img/archive/'+ arg     # we need to have a url to the src of the binary video file that is diffrent from the html file
+        videoelement = videotplt.format(src=path)
+        out =  htmlwrapper.format(body=videoelement, titel=titel)
     else: # list folder
         folder = arg
         try:
@@ -91,8 +72,8 @@ def archive (arg):
             for f in os.listdir(path):
                 items.append('<li><a href="/archive/{folder}/{file}">{file}</a></li>'.format(folder=folder,file=f))
             items.sort(key=lambda e: e.lower()) # todo dont mix files and folders
-            body = folderbodytemplate.format(folder=folder, items="\n".join(items))
-            out = head % { 'title' : "Folder " + folder } + body + outtail
+            body = foldertplt.format(folder=folder, items="\n".join(items))
+            out = htmlwrapper.format(title="Folder "+folder, body=body)
         except Exception as e:
             return e
     return out
@@ -165,15 +146,14 @@ def conv(files):
     for fpath in files: 
         with open(fpath, 'r') as f:
             text = f.read()
-
         html = md.convert(text)
         md_meta =  md.Meta
         metatitle = md_meta.get('title')[0] # [0] -> converts one element list to string
-        outhead = head % { 'title' : metatitle }
+        outhtml = htmlwrapper.format(titel=metatitle, body=html)
 
         htmlpath = fpath.rsplit('.',1)[0] + ".html"
         with open(htmlpath, 'w') as f:
-            f.write(outhead + html + outtail)
+            f.write(outhtml)
         md.reset()
 
 if __name__ == '__main__':
