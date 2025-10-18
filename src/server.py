@@ -12,7 +12,7 @@ import os
 archivepath = "/app/archive/"
 # archivepath = "/archive"
 
-htmlwrapper = """<!DOCTYPE html> <html> <head><meta charset="utf-8"><link href="/styles/default.css" type="text/css" rel="stylesheet" /><link href="/styles/markdown1.css" type="text/css" rel="stylesheet" /><title>{titel}</title></head><body>{body}</body></html>"""
+htmlwrapper = """<!DOCTYPE html> <html> <head><meta charset="utf-8"><link href="/styles/default.css" type="text/css" rel="stylesheet" /><link href="/styles/markdown1.css" type="text/css" rel="stylesheet" /><title>{title}</title></head><body>{body}</body></html>"""
 foldertplt = """<h1>Folder listing of {folder}</h1><ul>{items}</ul>"""
 imagetplt = """<img src="{src}">"""
 videotplt = """<video> <source src="{src}"/> </video>"""
@@ -114,15 +114,15 @@ def archive (arg):
     base, extension = os.path.splitext(arg)
     lext = extension.lower()
     if lext in imgextlist:
-        titel = arg
+        title = arg
         path = '/img/archive/'+ arg     # we need to have a url to the src of the binary image file that is diffrent from the html file
         imageelement = imagetplt.format(src=path)
-        out =  htmlwrapper.format(body=imageelement, titel=titel)
+        out =  htmlwrapper.format(body=imageelement, title=title)
     elif lext in vidextlist: # we need some player
-        titel = arg
+        title = arg
         path = '/img/archive/'+ arg     # we need to have a url to the src of the binary video file that is diffrent from the html file
         videoelement = videotplt.format(src=path)
-        out =  htmlwrapper.format(body=videoelement, titel=titel)
+        out =  htmlwrapper.format(body=videoelement, title=title)
     else: # list folder
         folder = arg
         try:
@@ -130,8 +130,8 @@ def archive (arg):
             for f in os.listdir(path):
                 items.append('<li><a href="/archive/{folder}/{file}">{file}</a></li>'.format(folder=folder,file=f))
             items.sort(key=lambda e: e.lower()) # todo dont mix files and folders
-            body = foldertplt.format(folder=folder, items="\n".join(items))
-            out = htmlwrapper.format(title="Folder "+folder, body=body)
+            body = foldertplt.format(folder=folder, items="".join(items))
+            out = htmlwrapper.format(title="Folder "+folder, body=body) 
         except Exception as e:
             return e
     return out
@@ -161,7 +161,7 @@ def conv(files):
         html = md.convert(text)
         md_meta =  md.Meta
         metatitle = md_meta.get('title')[0] # [0] -> converts one element list to string
-        outhtml = htmlwrapper.format(titel=metatitle, body=html)
+        outhtml = htmlwrapper.format(title=metatitle, body=html)
 
         htmlpath = fpath.rsplit('.',1)[0] + ".html"
         with open(htmlpath, 'w') as f:
