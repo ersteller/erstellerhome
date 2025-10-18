@@ -17,7 +17,7 @@ foldertplt = """<h1>Folder listing of {folder}</h1><ul>{items}</ul>"""
 imagetplt = """<img src="{src}">"""
 videotplt = """<video> <source src="{src}"/> </video>"""
 imgextlist = ['.jpg', '.png', '.gif', '.jpeg', '.bmp']
-vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov'] 
+vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.flv', '.wmv'] 
 
 md = markdown.Markdown(extensions = [
                   'codehilite',
