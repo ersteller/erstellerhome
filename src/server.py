@@ -128,7 +128,10 @@ def archive (arg):
         try:
             items = []
             for f in os.listdir(path):
-                items.append('<li><a href="/archive/{folder}/{file}">{file}</a></li>'.format(folder=folder,file=f))
+                if os.path.isdir(archivepath + '/' + folder + '/' + f):
+                    items.append('<li> <a href="/archive/{folder}/{file}">{file}/</a></li>'.format(folder=folder,file=f))
+                else:
+                    items.append('<li><a href="/archive/{folder}/{file}">{file}</a></li>'.format(folder=folder,file=f))
             items.sort(key=lambda e: e.lower()) # todo dont mix files and folders
             body = foldertplt.format(folder=folder, items="".join(items))
             out = htmlwrapper.format(title="Folder "+folder, body=body) 
