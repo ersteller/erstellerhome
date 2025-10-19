@@ -22,7 +22,7 @@ docker run erstellerhome -d --restart unless-stopped -p 80:80
 
 docker run -d -p 80:80 --name erstellerhome --restart unless-stopped erstellerhome python /app/src/server.py
 
-docker stop erstellerhome && docker rm erstellerhome
+docker stop erstellerhome ; docker rm erstellerhome
 
 ### rebuild and deploy
 docker build -t erstellerhome . && docker stop erstellerhome && docker rm erstellerhome && docker run -d -v $HOME/.ssh/:/home/builduser/.ssh/:ro --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 --name erstellerhome --restart unless-stopped erstellerhome python /app/src/server.py
@@ -48,6 +48,9 @@ docker stop erstellerhometest; docker rm erstellerhometest
 ssl cert  
 301 redirect 
 check all links are with https  
+
+# for https we should use nginx
+https://nginx.org/en/linux_packages.html#Ubuntu
 
 ```
 # https://certbot.eff.org/instructions?ws=other&os=snap
