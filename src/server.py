@@ -12,12 +12,31 @@ import os
 archivepath = "/app/archive/"
 # archivepath = "/archive"
 
-htmlwrapper = """<!DOCTYPE html> <html> <head><meta charset="utf-8"><link href="/styles/default.css" type="text/css" rel="stylesheet" /><link href="/styles/markdown1.css" type="text/css" rel="stylesheet" /><title>{title}</title></head><body>{body}</body></html>"""
+mdfiles = [ 
+    "site/index.md",
+    "site/links.md",
+    "site/locals.md",
+    "site/forward.md",
+    ]
+stylesheets = [
+    'default.css',
+    'markdown1.css',
+    'video.css',
+    ]
+htmlwrapper = """<!DOCTYPE html> <html> <head><meta charset="utf-8"> {stylelinks} <title>{title}</title></head><body>{body}</body></html>"""
 foldertplt = """<h1>Folder listing of {folder}</h1><ul>{items}</ul>"""
 imagetplt = """<img src="{src}">"""
-videotplt = """<video> <source src="{src}"/> </video>"""
+videotplt = """<video controls preload="metadata"> <source src="{src}"/> </video>"""
+
+# maybe we could check the file header instead of the extension
 imgextlist = ['.jpg', '.png', '.gif', '.jpeg', '.bmp']
 vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.flv', '.wmv'] 
+
+# create style links and insert them in the html wrapper
+stylelinks = ""
+htmlwrapper = htmlwrapper.format(stylelinks = stylelinks, title="{title}", body="{body}")
+for sheet in stylesheets:
+    stylelinks += '<link href="/styles/{sheet}" type="text/css" rel="stylesheet" />'.format(sheet=sheet)
 
 md = markdown.Markdown(extensions = [
                   'codehilite',
@@ -172,11 +191,7 @@ def conv(files):
         md.reset()
 
 if __name__ == '__main__':
-  conv(["site/index.md",
-        "site/links.md",
-        "site/locals.md",
-        "site/forward.md",
-            ])
+  conv(mdfiles)
   #app.run(host='0.0.0.0', port=8000, debug=True ) for local debugging
   app.run(host='0.0.0.0', port=80)
 
