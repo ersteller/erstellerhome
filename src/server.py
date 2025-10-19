@@ -30,7 +30,7 @@ videotplt = """<video controls preload="metadata"> <source src="{src}"/> </video
 
 # maybe we could check the file header instead of the extension
 imgextlist = ['.jpg', '.png', '.gif', '.jpeg', '.bmp']
-vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.flv', '.wmv'] 
+vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.flv', '.wmv', '.mpeg', '.mpg'] #  wmv needs some special codecs?
 
 # create style links and insert them in the html wrapper
 stylelinks = ""
