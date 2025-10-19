@@ -34,6 +34,7 @@ docker run -dt --rm --mount  type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-4
 ## in test
 docker run -dt --rm --mount  type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 8888:80 --name erstellerhometest erstellerhome bash
 
+-v $HOME/.ssh/:/home/builduser/.ssh/:ro
 
 # TODO:
 - implement forwarding or status 
