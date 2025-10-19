@@ -1,0 +1,94 @@
+FROM ubuntu:25.10 as ubuntupython
+
+RUN apt update
+RUN apt install --yes python3 python3-venv cron nginx
+
+RUN python3 -m venv /opt/certbot/
+RUN /opt/certbot/bin/pip install --upgrade pip
+RUN /opt/certbot/bin/pip install certbot
+RUN ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+
+RUN python3 -m venv /opt/flask/
+RUN /opt/flask/bin/pip install --upgrade pip
+RUN /opt/flask/bin/pip install flask markdown gunicorn
+RUN ln -s /opt/flask/bin/flask /usr/bin/flask
+RUN ln -s /opt/flask/bin/gunicorn /usr/bin/gunicorn
+
+# for installing mod_wsgi we need apache2-dev and python3-dev # maybe ibaugeas-dev gcc
+# RUN apt install --yes apache2 apache2-dev python3-dev 
+
+
+#  gunicorn --certfile=server.crt --keyfile=server.key --bind 0.0.0.0:443 test:app
+# {module_import}:{app_variable}. module_import
+
+FROM ubuntupython as flaskcertbotx 
+
+# RUN echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+#    http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
+#    | sudo tee /etc/apt/sources.list.d/nginx.list
+# RUN apt update
+# RUN apt install 
+
+RUN echo exit > /root/.bash_history
+RUN echo /opt/flask/bin/python3 /app/src/server.py  >> /root/.bash_history
+WORKDIR /app
+
+# crontab -e [username] # for cert renewal evrey week at friday 2am
+# 0 2 * * 5 /opt/certbot/bin/certbot renew
+
+# if my website is not running
+# CMD certbot certonly --standalone
+
+COPY Dockerfile README.md ./
+COPY src src
+COPY site site
+COPY styles styles
+COPY img img
+COPY .git .git
+RUN cp src/nginx.conf /etc/nginx/nginx.conf
+
+
+#ENV FLASK_ENV=development
+ENV FLASK_ENV=production
+ENV FLASK_APP=src/server
+
+ENV EMAIL=siggi2017.jak+ersteller@gmail.com
+ENV DOMAINS=ersteller.net
+
+
+
+RUN certbot certonly --standalone --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
+# certbot run --manual --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
+# certbot certonly --webroot --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
+
+# cat /etc/letsencrypt/cli.ini 
+# cat ~/.config/letsencrypt/cli.ini
+# ll /etc/letsencrypt/live/ersteller.net/
+ENV KEYFILE=/etc/letsencrypt/live/ersteller.net/privkey.pem
+ENV CERTFILE=/etc/letsencrypt/live/ersteller.net/fullchain.pem
+
+
+# so first run would be to get the certs with certbot
+# then copy the certs to the app folder or just point the server to the cert location
+
+# we need to start guinicorn with cert and key and app module
+# optionally we could use nginx as reverse proxy in front of gunicorn
+
+# CMD flask run --host=0.0.0.0 --port=80
+# gunicorn --certfile=server.crt --keyfile=server.key --bind 0.0.0.0:443 test:app
+# gunicorn --certfile=$CERTFILE --keyfile=$KEYFILE --bind 0.0.0.0:443 src:server.app
+
+
+# certbot certonly --webroot
+
+# where do we provide certbot with domain name?
+
+#  gunicorn --bind 0.0.0.0:443 test:app
+
+
+# docker build  -t ehome -f DockerfileNew .
+## prod
+# docker run -d --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 -p 443:443 --name ehome --restart unless-stopped ehome bash
+## test
+# docker run -it -v ${PWD}:/app --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 -p 443:443 --name ehome --rm ehome bash
+
