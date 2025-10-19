@@ -34,9 +34,9 @@ vidextlist  = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.flv', '.wmv']
 
 # create style links and insert them in the html wrapper
 stylelinks = ""
-htmlwrapper = htmlwrapper.format(stylelinks = stylelinks, title="{title}", body="{body}")
 for sheet in stylesheets:
     stylelinks += '<link href="/styles/{sheet}" type="text/css" rel="stylesheet" />'.format(sheet=sheet)
+htmlwrapper = htmlwrapper.format(stylelinks = stylelinks, title="{title}", body="{body}")
 
 md = markdown.Markdown(extensions = [
                   'codehilite',
