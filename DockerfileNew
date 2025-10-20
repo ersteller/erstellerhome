@@ -55,17 +55,26 @@ ENV FLASK_APP=src/server
 ENV EMAIL=siggi2017.jak+ersteller@gmail.com
 ENV DOMAINS=ersteller.net
 
+ENV KEYFILE=/etc/letsencrypt/live/ersteller.net/privkey.pem
+ENV CERTFILE=/etc/letsencrypt/live/ersteller.net/fullchain.pem
+
+# /opt/flask/bin/python3 /app/src/server.py &   # for serving the challange
+# certbot certonly --webroot -w /app --non-interactive --agree-tos --email $EMAIL -d $DOMAINS  # we get the certs
+# gunicorn --certfile=$CERTFILE --keyfile=$KEYFILE --bind 0.0.0.0:443 src.server:app
 
 
-RUN certbot certonly --standalone --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
+
+
+
+# RUN certbot certonly --standalone --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
 # certbot run --manual --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
 # certbot certonly --webroot --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
+# certbot certonly --webroot -w /app --non-interactive --agree-tos --email $EMAIL -d $DOMAINS
+
 
 # cat /etc/letsencrypt/cli.ini 
 # cat ~/.config/letsencrypt/cli.ini
 # ll /etc/letsencrypt/live/ersteller.net/
-ENV KEYFILE=/etc/letsencrypt/live/ersteller.net/privkey.pem
-ENV CERTFILE=/etc/letsencrypt/live/ersteller.net/fullchain.pem
 
 
 # so first run would be to get the certs with certbot
@@ -76,7 +85,7 @@ ENV CERTFILE=/etc/letsencrypt/live/ersteller.net/fullchain.pem
 
 # CMD flask run --host=0.0.0.0 --port=80
 # gunicorn --certfile=server.crt --keyfile=server.key --bind 0.0.0.0:443 test:app
-# gunicorn --certfile=$CERTFILE --keyfile=$KEYFILE --bind 0.0.0.0:443 src:server.app
+# gunicorn --certfile=$CERTFILE --keyfile=$KEYFILE --bind 0.0.0.0:443 src.server
 
 
 # certbot certonly --webroot
