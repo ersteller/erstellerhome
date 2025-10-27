@@ -58,6 +58,10 @@ ENV DOMAINS=ersteller.net
 ENV KEYFILE=/etc/letsencrypt/live/ersteller.net/privkey.pem
 ENV CERTFILE=/etc/letsencrypt/live/ersteller.net/fullchain.pem
 
+
+# we should use caddy that would make certbot unneccessary
+# as chatgpt suggested https://chatgpt.com/c/68fb6b7d-0160-832b-9427-b9a924555f3f
+
 # /opt/flask/bin/python3 /app/src/server.py &   # for serving the challange
 # certbot certonly --webroot -w /app --non-interactive --agree-tos --email $EMAIL -d $DOMAINS  # we get the certs
 # gunicorn --certfile=$CERTFILE --keyfile=$KEYFILE --bind 0.0.0.0:443 src.server:app

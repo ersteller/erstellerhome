@@ -62,3 +62,20 @@ sudo certbot certonly --webroot         # webserver needs to serve files from /.
 # for renewal testing 
 sudo certbot renew --dry-run
 ```
+
+
+# caddy problems 
+
+```
+open /root/.local/share/caddy/acme/acme-v02.api.letsencrypt.org-directory/users/default/default.json: no such file or directory"
+
+2025/10/27 19:54:25.319 INFO    trying to solve challenge       {"identifier": "ersteller.net", "challenge_type": "tls-alpn-01", "ca": "https://acme-staging-v02.api.letsencrypt.org/directory"}
+2025/10/27 19:54:26.275 ERROR   challenge failed        {"identifier": "ersteller.net", "challenge_type": "tls-alpn-01", "problem": {"type": "urn:ietf:params:acme:error:connection", "title": "", "detail": "77.179.227.37: Connection refused", "instance": "", "subproblems": null}}
+github.com/mholt/acmez/v3.(*Client).pollAuthorization
+        github.com/mholt/acmez/v3@v3.1.2/client.go:557
+github.com/mholt/acmez/v3.(*Client).solveChallenges
+025/10/27 19:54:26.276 ERROR   validating authorization        {"identifier": "ersteller.net", "problem": {"type": "urn:ietf:params:acme:error:connection", "title": "", "detail": "77.179.227.37: Connection refused", "instance": "", "subproblems": null}, "order": "https://acme-staging-v02.api.letsencrypt.org/acme/order/238158373/28274043243", "attempt": 2, "max_attempts": 3}
+2025/10/27 19:54:26.276 ERROR   tls.obtain      could not get certificate from issuer   {"identifier": "ersteller.net", "issuer": "acme-v02.api.letsencrypt.org-directory", "error": "HTTP 400 urn:ietf:params:acme:error:connection - 77.179.227.37: Connection refused"}
+2025/10/27 19:54:26.276 ERROR   tls.obtain      will retry      {"error": "[ersteller.net] Obtain: [ersteller.net] solving challenge: ersteller.net: [ersteller.net] authorization failed: HTTP 400 urn:ietf:params:acme:error:connection - 77.179.227.37: Connection refused (ca=https://acme-staging-v02.api.letsencrypt.org/directory)", "attempt": 2, "retrying_in": 120, "elapsed": 68.947623296, "max_duration": 2592000}
+2025/10/27 19:56:26.275 INFO    tls.obtain      obtaining certificate   {"identifier": "ersteller.net"}
+```

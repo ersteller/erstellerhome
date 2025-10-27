@@ -193,6 +193,7 @@ def conv(files):
 if __name__ == '__main__':
   conv(mdfiles)
   #app.run(host='0.0.0.0', port=8000, debug=True ) for local debugging
+  print("starting flask app")
   app.run(host='0.0.0.0', port=80)
 
 
