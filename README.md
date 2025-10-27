@@ -1,7 +1,7 @@
 # erstellerhome
 This is a small webserver. It converts Markdown files to html files.  
-URLs are relative to root without html file extension.
-
+URLs are relative to root without html file extension.  
+HTTPS is handled by caddy and WSGI by gunicorn  
 
 ## build
 docker container for hosting website
