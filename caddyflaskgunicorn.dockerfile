@@ -56,11 +56,11 @@ EXPOSE 80 443 8000
 CMD src/startup.sh
 
 
-# docker build -t ucfehome -f caddyflaskgunicorn.dockerfile . 
-# docker run -it -p 80:80 -p 443:443 ucfehome 
+# docker build -t erstellerhome .
+# docker run -it -p 80:80 -p 443:443 erstellerhome 
 
 # -v ${PWD}:/app -p 8000:8000 # for development purposes
 
-# docker run -d -v $HOME/.ssh/:/root/.ssh/:ro --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 -p 443:443 --name ucfehome --restart unless-stopped ucfehome
-# docker logs -f ucfehome
+# docker run -d -v $HOME/.ssh/:/root/.ssh/:ro --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 -p 443:443 --name erstellerhome --restart unless-stopped erstellerhome
+# docker logs -f erstellerhome
 
