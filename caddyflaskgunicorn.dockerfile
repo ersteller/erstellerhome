@@ -24,6 +24,10 @@ RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --de
     && apt update \
     && apt install -y caddy 
 
+# some bash history entries for convenience
+RUN echo exit > /root/.bash_history
+RUN echo /app/src/startup.sh >> /root/.bash_history
+
 ENV PATH="/opt/flask/bin:$PATH"
 ENV FLASK_APP=src.server
 ENV FLASK_ENV=production
@@ -38,6 +42,9 @@ COPY README.md ./
 # copy Caddyfile
 COPY src/Caddyfile /etc/caddy/Caddyfile
 
+# convert Markdown to HTML (used to be done only at startup, now done at build time as well)
+RUN python -c 'import src.server;src.server.conv(src.server.mdfiles, verbose=True)'
+
 # ------------------------
 # Startscript for Caddy + Gunicorn
 # ------------------------
@@ -46,10 +53,14 @@ RUN chmod +x src/startup.sh
 
 EXPOSE 80 443 8000
 
-CMD ["src/startup.sh"]
+CMD src/startup.sh
 
 
-# docker build -t ucfimage -f caddyflaskgunicorn.dockerfile . 
-# docker run -it -p 80:80 -p 443:443 ucfimage 
+# docker build -t ucfehome -f caddyflaskgunicorn.dockerfile . 
+# docker run -it -p 80:80 -p 443:443 ucfehome 
 
 # -v ${PWD}:/app -p 8000:8000 # for development purposes
+
+# docker run -d -v $HOME/.ssh/:/root/.ssh/:ro --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 -p 443:443 --name ucfehome --restart unless-stopped ucfehome
+# docker logs -f ucfehome
+

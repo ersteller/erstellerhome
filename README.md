@@ -49,6 +49,11 @@ ssl cert
 301 redirect 
 check all links are with https  
 
+# prod
+docker run -d -v $HOME/.ssh/:/root/.ssh/:ro --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 -p 443:443 --name ucfehome --restart unless-stopped ucfehome
+# debug
+docker run -it -v $HOME/.ssh/:/root/.ssh/:ro --mount type=bind,src=/srv/dev-disk-by-uuid-1e0dd676-fe98-461e-b8ba-9f7a6607af4d/public/erotic/archive,dst=/app/archive -p 80:80 -p 443:443 -v ${PWD}:/app -p 8000:8000 --name ucfehome --rm ucfehome bash
+
 # for https we should use nginx
 https://nginx.org/en/linux_packages.html#Ubuntu
 

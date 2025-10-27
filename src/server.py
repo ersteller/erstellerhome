@@ -173,7 +173,7 @@ def reconv():
     conv(files)
     return Response("converted", status=200)
 
-def conv(files):
+def conv(files, verbose=False):
     # open files to be converted
     # open new file and fill it with html and save 
     # maybe make routs to converted sites
@@ -186,6 +186,8 @@ def conv(files):
         outhtml = htmlwrapper.format(title=metatitle, body=html)
 
         htmlpath = fpath.rsplit('.',1)[0] + ".html"
+        if verbose:
+            print("converting ", fpath, " to ", htmlpath)
         with open(htmlpath, 'w') as f:
             f.write(outhtml)
         md.reset()
